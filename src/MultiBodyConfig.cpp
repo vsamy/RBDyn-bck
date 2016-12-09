@@ -51,6 +51,9 @@ MultiBodyConfig::MultiBodyConfig(const MultiBody& mb):
 		alphaD[i].resize(mb.joint(i).dof());
 
 		jointTorque[i].resize(mb.joint(i).dof());
+		jointMotorTorque[i].resize(mb.joint(i).dof(), 0);
+		jointGainsK[i].resize(mb.joint(i).dof(), 0);
+		jointGainsB[i].resize(mb.joint(i).dof(), 0);
 		motionSubspace[i].resize(6, mb.joint(i).dof());
 	}
 }
@@ -65,6 +68,9 @@ void MultiBodyConfig::zero(const MultiBody& mb)
 		alphaD[i] = mb.joint(i).zeroDof();
 
 		jointTorque[i] = mb.joint(i).zeroDof();
+		jointMotorTorque[i] = mb.joint(i).zeroDof();
+		jointGainsK[i] = mb.joint(i).zeroDof();
+		jointGainsB[i] = mb.joint(i).zeroDof();
 	}
 
 	for(std::size_t i = 0; i < force.size(); ++i)

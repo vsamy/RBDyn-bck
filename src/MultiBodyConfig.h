@@ -65,6 +65,14 @@ struct RBDYN_DLLAPI MultiBodyConfig
 	/// Joints torque.
 	std::vector<std::vector<double>> jointTorque;
 
+    /// Joints motor torque
+	std::vector<std::vector<double>> jointMotorTorque;
+
+	/// Joint gains stiffness K
+	std::vector<std::vector<double> > jointGainsK;
+
+	/// Joint gains damping B
+	std::vector<std::vector<double> > jointGainsB;
 
 
 	/// Motion subspace (Xj.j.subspace).
