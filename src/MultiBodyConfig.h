@@ -65,15 +65,14 @@ struct RBDYN_DLLAPI MultiBodyConfig
 	/// Joints torque.
 	std::vector<std::vector<double>> jointTorque;
 
-    /// Joints motor torque
+    /// Joints motor torque calculated with \f$\tau=Ke+B\dot{e}\f$
 	std::vector<std::vector<double>> jointMotorTorque;
 
 	/// Joint gains stiffness K
-	std::vector<std::vector<double> > jointGainsK;
+	std::vector<std::vector<double>> jointGainsK;
 
 	/// Joint gains damping B
-	std::vector<std::vector<double> > jointGainsB;
-
+	std::vector<std::vector<double>> jointGainsB;
 
 	/// Motion subspace (Xj.j.subspace).
 	std::vector<Eigen::Matrix<double, 6, Eigen::Dynamic>> motionSubspace;
