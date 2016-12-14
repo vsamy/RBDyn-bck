@@ -36,6 +36,9 @@ MultiBodyConfig::MultiBodyConfig(const MultiBody& mb):
 	jointConfig(mb.nrJoints()),
 	jointVelocity(mb.nrJoints()),
 	jointTorque(mb.nrJoints()),
+    jointMotorTorque(mb.nrJoints()),
+    jointGainsK(mb.nrJoints()),
+    jointGainsB(mb.nrJoints()),
 	motionSubspace(mb.nrJoints()),
 	bodyPosW(mb.nrBodies()),
 	parentToSon(mb.nrBodies()),
@@ -49,11 +52,10 @@ MultiBodyConfig::MultiBodyConfig(const MultiBody& mb):
 		q[i].resize(mb.joint(i).params());
 		alpha[i].resize(mb.joint(i).dof());
 		alphaD[i].resize(mb.joint(i).dof());
-
 		jointTorque[i].resize(mb.joint(i).dof());
-		jointMotorTorque[i].resize(mb.joint(i).dof(), 0);
-		jointGainsK[i].resize(mb.joint(i).dof(), 0);
-		jointGainsB[i].resize(mb.joint(i).dof(), 0);
+		jointMotorTorque[i].resize(mb.joint(i).dof());
+		jointGainsK[i].resize(mb.joint(i).dof());
+		jointGainsB[i].resize(mb.joint(i).dof());
 		motionSubspace[i].resize(6, mb.joint(i).dof());
 	}
 }
