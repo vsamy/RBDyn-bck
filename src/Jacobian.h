@@ -223,6 +223,49 @@ public:
 		Eigen::MatrixXd& res);
 
 	/**
+		* Compute the inverse of the operational inertia matrix
+		* @param mb MultiBody used has model.
+		* @param mbc Use bodyPosW and motionSubspace.
+		* @param HInv Inverse of the inertia matrix
+		* @param X_0_p Jacobian point/frame
+		*/
+	void lambdaInv(const MultiBody& mb, const MultiBodyConfig& mbc,
+		const Eigen::MatrixXd& HInv, const sva::PTransformd& X_0_p);
+
+	/**
+		* Compute the inverse of the operational inertia matrix
+		* @param mb MultiBody used has model.
+		* @param mbc Use bodyPosW and motionSubspace.
+		* @param HInv Inverse of the inertia matrix
+		*/
+	void lambdaInv(const MultiBody& mb, const MultiBodyConfig& mbc,
+		const Eigen::MatrixXd& HInv);
+
+	/**
+		* Compute the inverse of the operational inertia matrix
+		* @param mb MultiBody used has model.
+		* @param HInv Inverse of the inertia 
+        * @param shortJac Given shortJac 
+		*/
+	void lambdaInv(const MultiBody& mb, const Eigen::MatrixXd& HInv, 
+        const Eigen::Ref<const Eigen::MatrixXd>& shortJac);
+
+	/**
+		* Compute the inverse of the operational inertia matrix.
+		* LambdaInv must have been computed before using this function
+		* If lambdaInv is singular a least-square solution is computed.
+		* @return Return the operational inertia matrix
+		*/
+	Eigen::MatrixXd lambda();
+
+	/**
+		* Compute the effective mass at the given point. LambdaInv must have been computed first
+		* @param E_0_p Orientation of the point (Axis from to compute the effective mass) default is identity (world frame orientation)
+		* @return Vector6d of mass (Ix, Iy, Iz, mx, my, mz)
+		*/
+	Eigen::Vector6d effectiveMass(const Eigen::Matrix3d& E_0_p=Eigen::Matrix3d::Identity()) const;
+
+	/**
 		* Project the jacobian in the full robot parameters vector.
 		* @param mb MuliBody used has model.
 		* @param jac Jacobian to project.
@@ -373,7 +416,26 @@ public:
 		*/
 	sva::MotionVecd sBodyNormalAcceleration(const MultiBody& mb, const MultiBodyConfig& mbc,
 		const std::vector<sva::MotionVecd>& normalAccB) const;
+	/**
+		* safe version of @see lambdaInv.
+		* @throw std::domain_error If mb don't match mbc or jointPath.
+		*/
+	void sLambdaInv(const MultiBody& mb, const MultiBodyConfig& mbc,
+		const Eigen::MatrixXd& HInv, const sva::PTransformd& X_0_p);
 
+	/**
+		* safe version of @see lambdaInv.
+		* @throw std::domain_error If mb don't match mbc or jointPath.
+		*/
+	void sLambdaInv(const MultiBody& mb, const MultiBodyConfig& mbc,
+		const Eigen::MatrixXd& HInv);
+
+	/**
+		* safe version of @see lambdaInv.
+		* @throw std::domain_error If mb don't match mbc or jointPath.
+		*/
+	void sLambdaInv(const MultiBody& mb, const Eigen::MatrixXd& HInv, 
+        const Eigen::Ref<const Eigen::MatrixXd>& shortJac);
 private:
 	sva::MotionVecd normalAcceleration(const MultiBodyConfig& mbc,
 		const sva::MotionVecd& bodyNNormalAcc, const sva::PTransformd& X_b_p,
@@ -382,6 +444,10 @@ private:
 		const sva::MotionVecd& bodyNNormalAcc) const;
 	sva::MotionVecd bodyNormalAcceleration(const MultiBodyConfig& mbc,
 		const sva::MotionVecd& bodyNNormalAcc) const;
+	void computeLambdaInv(const MultiBody& mb, const Eigen::MatrixXd& HInv, 
+		const Eigen::Ref<const Eigen::MatrixXd>& shortJac);
+	void sComputeLambdaInv(const MultiBody& mb, const Eigen::MatrixXd& HInv, 
+		const Eigen::Ref<const Eigen::MatrixXd>& shortJac);
 
 private:
 	std::vector<int> jointsPath_;
@@ -389,6 +455,11 @@ private:
 
 	Eigen::MatrixXd jac_;
 	Eigen::MatrixXd jacDot_;
+
+	Eigen::Matrix6d lambdaInv_;
+	Eigen::LDLT<Eigen::MatrixXd> ldlt_;
+
+	bool isLambdaInvComputed_;
 };
 
 } // namespace rbd

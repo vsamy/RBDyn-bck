@@ -28,6 +28,7 @@ namespace rbd
 
 ForwardDynamics::ForwardDynamics(const MultiBody& mb):
 	H_(mb.nrDof(), mb.nrDof()),
+	HInv_(mb.nrDof(), mb.nrDof()),
 	C_(mb.nrDof()),
 	I_st_(mb.nrBodies()),
 	F_(mb.nrJoints()),
@@ -149,6 +150,16 @@ void ForwardDynamics::computeC(const MultiBody& mb, const MultiBodyConfig& mbc)
 }
 
 
+void ForwardDynamics::computeHInv(const MultiBody& mb, const MultiBodyConfig& mbc)
+{
+	computeH(mb, mbc);
+
+	ldlt_.compute(H_);
+	HInv_ = ldlt_.solve(Eigen::MatrixXd::Identity(H_.rows(), H_.cols()));
+}
+
+
+
 
 void ForwardDynamics::sForwardDynamics(const MultiBody& mb, MultiBodyConfig& mbc)
 {
@@ -187,6 +198,15 @@ void ForwardDynamics::sComputeC(const MultiBody& mb, const MultiBodyConfig& mbc)
 	checkMatchForce(mb, mbc);
 
 	computeC(mb, mbc);
+}
+
+
+void ForwardDynamics::sComputeHInv(const MultiBody& mb, const MultiBodyConfig& mbc)
+{
+	checkMatchParentToSon(mb, mbc);
+	checkMatchMotionSubspace(mb, mbc);
+
+	computeHInv(mb, mbc);
 }
 
 } // namespace rbd

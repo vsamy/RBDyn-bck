@@ -69,6 +69,12 @@ public:
 		*/
 	void computeC(const MultiBody& mb, const MultiBodyConfig& mbc);
 
+	/**
+		* Compute the inverse matrix of H
+		* @param H the inertia matrix
+		*/
+	void computeHInv(const MultiBody& mb, const MultiBodyConfig& mbc);
+
 
 	/// @return The inertia matrix H.
 	const Eigen::MatrixXd& H() const
@@ -80,6 +86,12 @@ public:
 	const Eigen::VectorXd& C() const
 	{
 		return C_;
+	}
+
+	/// @return The inverse of theinertia matrix H.
+	const Eigen::MatrixXd& HInv() const
+	{
+		return HInv_;
 	}
 
 	/// @return Inertia of tho subtree rooted at body i.
@@ -105,8 +117,13 @@ public:
 		*/
 	void sComputeC(const MultiBody& mb, const MultiBodyConfig& mbc);
 
+	/** safe version of @see computeHInv.
+		* @throw std::domain_error If mb don't match mbc.
+		*/
+	void sComputeHInv(const MultiBody& mb, const MultiBodyConfig& mbc);
+
 private:
-	Eigen::MatrixXd H_;
+	Eigen::MatrixXd H_, HInv_;
 	Eigen::VectorXd C_;
 
 	// H computation
