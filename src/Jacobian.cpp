@@ -460,20 +460,10 @@ void Jacobian::lambdaInv(const MultiBody& mb, const MultiBodyConfig& mbc,
 }
 
 
-void Jacobian::lambdaInv(const MultiBody& mb, const Eigen::MatrixXd& HInv, 
-    const Eigen::Ref<const Eigen::MatrixXd>& shortJac)
-{
-	assert(HInv.rows() == HInv.cols());
-	assert(HInv.rows() == mb.nrDof());
-
-	computeLambdaInv(mb, HInv, shortJac);
-}
-
-
 void Jacobian::computeLambdaInv(const MultiBody& mb, const Eigen::MatrixXd& HInv, 
-	const Eigen::Ref<const Eigen::MatrixXd>& shortJac)
+	const Eigen::MatrixXd& shortJac)
 {
-    Eigen::MatrixXd fullJac(shortJac.rows(), HInv.cols());
+	Eigen::MatrixXd fullJac(6, HInv.cols());
 	fullJacobian(mb, shortJac, fullJac);
 
 	lambdaInv_.noalias() = fullJac*HInv*fullJac.transpose();
@@ -848,20 +838,10 @@ void Jacobian::sLambdaInv(const MultiBody& mb, const MultiBodyConfig& mbc,
 }
 
 
-void Jacobian::sLambdaInv(const MultiBody& mb, const Eigen::MatrixXd& HInv, 
-    const Eigen::Ref<const Eigen::MatrixXd>& shortJac)
-{
-	assert(HInv.rows() == HInv.cols());
-	assert(HInv.rows() == mb.nrDof());
-
-	sComputeLambdaInv(mb, HInv, shortJac);
-}
-
-
 void Jacobian::sComputeLambdaInv(const MultiBody& mb, const Eigen::MatrixXd& HInv, 
-	const Eigen::Ref<const Eigen::MatrixXd>& shortJac)
+	const Eigen::MatrixXd& shortJac)
 {
-    Eigen::MatrixXd fullJac(shortJac.rows(), HInv.cols());
+	Eigen::MatrixXd fullJac(6, HInv.cols());
 	sFullJacobian(mb, shortJac, fullJac);
 
 	lambdaInv_.noalias() = fullJac*HInv*fullJac.transpose();

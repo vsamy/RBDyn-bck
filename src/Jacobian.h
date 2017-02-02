@@ -242,15 +242,6 @@ public:
 		const Eigen::MatrixXd& HInv);
 
 	/**
-		* Compute the inverse of the operational inertia matrix
-		* @param mb MultiBody used has model.
-		* @param HInv Inverse of the inertia 
-        * @param shortJac Given shortJac 
-		*/
-	void lambdaInv(const MultiBody& mb, const Eigen::MatrixXd& HInv, 
-        const Eigen::Ref<const Eigen::MatrixXd>& shortJac);
-
-	/**
 		* Compute the inverse of the operational inertia matrix.
 		* LambdaInv must have been computed before using this function
 		* If lambdaInv is singular a least-square solution is computed.
@@ -417,25 +408,18 @@ public:
 	sva::MotionVecd sBodyNormalAcceleration(const MultiBody& mb, const MultiBodyConfig& mbc,
 		const std::vector<sva::MotionVecd>& normalAccB) const;
 	/**
-		* safe version of @see lambdaInv.
+		* safe version of @see lambda.
 		* @throw std::domain_error If mb don't match mbc or jointPath.
 		*/
 	void sLambdaInv(const MultiBody& mb, const MultiBodyConfig& mbc,
 		const Eigen::MatrixXd& HInv, const sva::PTransformd& X_0_p);
 
 	/**
-		* safe version of @see lambdaInv.
+		* safe version of @see lambda.
 		* @throw std::domain_error If mb don't match mbc or jointPath.
 		*/
 	void sLambdaInv(const MultiBody& mb, const MultiBodyConfig& mbc,
 		const Eigen::MatrixXd& HInv);
-
-	/**
-		* safe version of @see lambdaInv.
-		* @throw std::domain_error If mb don't match mbc or jointPath.
-		*/
-	void sLambdaInv(const MultiBody& mb, const Eigen::MatrixXd& HInv, 
-        const Eigen::Ref<const Eigen::MatrixXd>& shortJac);
 private:
 	sva::MotionVecd normalAcceleration(const MultiBodyConfig& mbc,
 		const sva::MotionVecd& bodyNNormalAcc, const sva::PTransformd& X_b_p,
@@ -445,9 +429,9 @@ private:
 	sva::MotionVecd bodyNormalAcceleration(const MultiBodyConfig& mbc,
 		const sva::MotionVecd& bodyNNormalAcc) const;
 	void computeLambdaInv(const MultiBody& mb, const Eigen::MatrixXd& HInv, 
-		const Eigen::Ref<const Eigen::MatrixXd>& shortJac);
+		const Eigen::MatrixXd& shortJac);
 	void sComputeLambdaInv(const MultiBody& mb, const Eigen::MatrixXd& HInv, 
-		const Eigen::Ref<const Eigen::MatrixXd>& shortJac);
+		const Eigen::MatrixXd& shortJac);
 
 private:
 	std::vector<int> jointsPath_;
