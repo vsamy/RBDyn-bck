@@ -225,6 +225,8 @@ public:
 		return nrDof_;
 	}
 
+    /// @return kinematic chain from index
+    std::vector<int> kinematicChain(int index) const;
 
 
 	// safe accessors version for python binding
@@ -356,6 +358,11 @@ public:
 	{
 		return jointNameToInd_.at(name);
 	}
+
+    /** Safe version of @see kinematicChain
+	 * @throw std::out_of_range.
+     */
+    std::vector<int> skinematicChain(int index) const;
 
 private:
 	std::vector<Body> bodies_;

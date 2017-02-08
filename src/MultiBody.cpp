@@ -59,4 +59,49 @@ MultiBody::MultiBody(std::vector<Body> bodies, std::vector<Joint> joints,
 	}
 }
 
+std::vector<int> MultiBody::kinematicChain(int index) const
+{
+    if (index == 0)
+        return std::vector<int>(1, 0);
+    std::vector<int> kinChain(1, index);
+    bool stopSearch = false;
+    while (!stopSearch)
+    {
+        for (int i = 0; i < static_cast<int>(parents().size()); ++i)
+        {
+            if(i != index && parent(index) == parent(i))
+            {
+                stopSearch = true;
+                break;
+            }
+        }
+        kinChain.emplace_back(parent(index));
+    }
+
+    return kinChain;
+}
+
+std::vector<int> MultiBody::skinematicChain(int index) const
+{
+    if (index == 0)
+        return std::vector<int>(1, 0);
+    std::vector<int> kinChain(1, index);
+    bool stopSearch = false;
+    while (!stopSearch)
+    {
+        for (int i = 0; i < static_cast<int>(parents().size()); ++i)
+        {
+            if(i != index && sParent(index) == sParent(i))
+            {
+                stopSearch = true;
+                break;
+            }
+        }
+        kinChain.emplace_back(sParent(index));
+    }
+
+    return kinChain;
+}
+
+
 } // namespace rbd
