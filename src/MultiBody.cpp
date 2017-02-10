@@ -17,7 +17,7 @@
 
 // associated header
 #include "MultiBody.h"
-#include <iostream>
+
 // includes
 // RBDyn
 #include "Body.h"
