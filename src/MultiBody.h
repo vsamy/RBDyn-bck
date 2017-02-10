@@ -362,7 +362,7 @@ public:
     /** Safe version of @see kinematicChain
 	 * @throw std::out_of_range.
      */
-    std::vector<int> skinematicChain(int index) const;
+    std::vector<int> sKinematicChain(int index) const;
 
 private:
 	std::vector<Body> bodies_;

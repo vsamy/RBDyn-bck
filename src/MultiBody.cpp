@@ -17,7 +17,7 @@
 
 // associated header
 #include "MultiBody.h"
-
+#include <iostream>
 // includes
 // RBDyn
 #include "Body.h"
@@ -63,10 +63,13 @@ std::vector<int> MultiBody::kinematicChain(int index) const
 {
     if (index == 0)
         return std::vector<int>(1, 0);
-    std::vector<int> kinChain(1, index);
+
+    std::vector<int> kinChain;
     bool stopSearch = false;
+
     while (!stopSearch)
     {
+        kinChain.emplace_back(index);
         for (int i = 0; i < static_cast<int>(parents().size()); ++i)
         {
             if(i != index && parent(index) == parent(i))
@@ -75,20 +78,23 @@ std::vector<int> MultiBody::kinematicChain(int index) const
                 break;
             }
         }
-        kinChain.emplace_back(parent(index));
+        index = parent(index);
     }
 
     return kinChain;
 }
 
-std::vector<int> MultiBody::skinematicChain(int index) const
+std::vector<int> MultiBody::sKinematicChain(int index) const
 {
     if (index == 0)
         return std::vector<int>(1, 0);
-    std::vector<int> kinChain(1, index);
+
+    std::vector<int> kinChain;
     bool stopSearch = false;
+    
     while (!stopSearch)
     {
+        kinChain.emplace_back(index);
         for (int i = 0; i < static_cast<int>(parents().size()); ++i)
         {
             if(i != index && sParent(index) == sParent(i))
@@ -97,7 +103,7 @@ std::vector<int> MultiBody::skinematicChain(int index) const
                 break;
             }
         }
-        kinChain.emplace_back(sParent(index));
+        index = sParent(index);
     }
 
     return kinChain;
