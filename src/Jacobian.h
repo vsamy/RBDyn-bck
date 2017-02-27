@@ -224,6 +224,7 @@ public:
 
 	/**
 		* Compute the inverse of the operational inertia matrix
+        * This function call @see computeLambdaInv
 		* @param mb MultiBody used has model.
 		* @param mbc Use bodyPosW and motionSubspace.
 		* @param HInv Inverse of the inertia matrix
@@ -234,6 +235,7 @@ public:
 
 	/**
 		* Compute the inverse of the operational inertia matrix
+        * This function call @see computeLambdaInv
 		* @param mb MultiBody used has model.
 		* @param mbc Use bodyPosW and motionSubspace.
 		* @param HInv Inverse of the inertia matrix
@@ -242,12 +244,21 @@ public:
 		const Eigen::MatrixXd& HInv);
 
 	/**
+		* Compute the inverse of the operational inertia matrix
+		* @param mb MultiBody used has model.
+		* @param HInv Inverse of the inertia matrix
+		* @param fullJac The jacobian matrix
+		*/
+    void computeLambdaInv(const MultiBody& mb, const Eigen::MatrixXd& HInv, 
+		const Eigen::MatrixXd& fullJac);
+
+	/**
 		* Compute the inverse of the operational inertia matrix.
 		* LambdaInv must have been computed before using this function
 		* If lambdaInv is singular a least-square solution is computed.
 		* @return Return the operational inertia matrix
 		*/
-	Eigen::MatrixXd lambda();
+	Eigen::Matrix6d lambda();
 
 	/**
 		* Compute the effective mass at the given point. LambdaInv must have been computed first
@@ -410,6 +421,7 @@ public:
 	/**
 		* safe version of @see lambda.
 		* @throw std::domain_error If mb don't match mbc or jointPath.
+        * or if HInv ot fullJac don't match mb.nrDof().
 		*/
 	void sLambdaInv(const MultiBody& mb, const MultiBodyConfig& mbc,
 		const Eigen::MatrixXd& HInv, const sva::PTransformd& X_0_p);
@@ -417,9 +429,17 @@ public:
 	/**
 		* safe version of @see lambda.
 		* @throw std::domain_error If mb don't match mbc or jointPath.
+        * or if HInv ot fullJac don't match mb.nrDof().
 		*/
 	void sLambdaInv(const MultiBody& mb, const MultiBodyConfig& mbc,
 		const Eigen::MatrixXd& HInv);
+
+	/**
+		* safe version of @see computeLambdaInv.
+		* @throw std::domain_error If HInv ot fullJac don't match mb.nrDof().
+		*/
+	void sComputeLambdaInv(const MultiBody& mb, const Eigen::MatrixXd& HInv, 
+		const Eigen::MatrixXd& fullJac);
 private:
 	sva::MotionVecd normalAcceleration(const MultiBodyConfig& mbc,
 		const sva::MotionVecd& bodyNNormalAcc, const sva::PTransformd& X_b_p,
@@ -428,10 +448,6 @@ private:
 		const sva::MotionVecd& bodyNNormalAcc) const;
 	sva::MotionVecd bodyNormalAcceleration(const MultiBodyConfig& mbc,
 		const sva::MotionVecd& bodyNNormalAcc) const;
-	void computeLambdaInv(const MultiBody& mb, const Eigen::MatrixXd& HInv, 
-		const Eigen::MatrixXd& shortJac);
-	void sComputeLambdaInv(const MultiBody& mb, const Eigen::MatrixXd& HInv, 
-		const Eigen::MatrixXd& shortJac);
 
 private:
 	std::vector<int> jointsPath_;
