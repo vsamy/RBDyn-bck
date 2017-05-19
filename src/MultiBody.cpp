@@ -17,7 +17,7 @@
 
 // associated header
 #include "MultiBody.h"
-#include <iostream>
+
 // includes
 // RBDyn
 #include "Body.h"
@@ -69,10 +69,13 @@ std::vector<int> MultiBody::kinematicChain(int index) const
 
     while (!stopSearch)
     {
-        kinChain.emplace_back(index);
+        if (joint(index).type() != Joint::Type::Fixed) // Avoid adding virtual body
+        {
+            kinChain.emplace_back(index);
+        }
         for (int i = 0; i < static_cast<int>(parents().size()); ++i)
         {
-            if(i != index && parent(index) == parent(i) && joint(i).type() != Joint::Type::Fixed)
+            if(i != index && parent(index) == parent(i) && joint(i).type() != Joint::Type::Fixed) // Do not consider virtual Joint
             {
                 stopSearch = true;
                 break;
@@ -94,7 +97,10 @@ std::vector<int> MultiBody::sKinematicChain(int index) const
     
     while (!stopSearch)
     {
-        kinChain.emplace_back(index);
+        if (sJoint(index).type() != Joint::Type::Fixed) // Avoid adding virtual body
+        {
+            kinChain.emplace_back(index);
+        }
         for (int i = 0; i < static_cast<int>(parents().size()); ++i)
         {
             if(i != index && sParent(index) == sParent(i) && sJoint(i).type() != Joint::Type::Fixed)
