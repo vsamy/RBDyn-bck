@@ -39,7 +39,7 @@ Jacobian::Jacobian(const MultiBody& mb, const std::string& bodyName,
   jac_(),
   jacDot_(),
   lambdaInv_(),
-  ldlt_(6),
+  ldlt_(),
   isLambdaInvComputed_(false)
 {
   int index = mb.sBodyIndexByName(bodyName);
@@ -438,22 +438,11 @@ void Jacobian::fullJacobian(const MultiBody& mb,
 }
 
 
-void Jacobian::lambdaInv(const MultiBody& mb, const MultiBodyConfig& mbc,
-	const Eigen::MatrixXd& HInv, const sva::PTransformd& X_0_p)
-{
-	Eigen::MatrixXd shortJac = jacobian(mb, mbc, X_0_p);
-    Eigen::MatrixXd fullJac(6, mb.nrDof());
-	fullJacobian(mb, shortJac, fullJac);
-
-	computeLambdaInv(mb, HInv, fullJac);
-}
-
-
-void Jacobian::lambdaInv(const MultiBody& mb, const MultiBodyConfig& mbc,
+void Jacobian::lambdaInv(const MultiBody& mb, 
+	const Eigen::Ref<const Eigen::MatrixXd>& shortJac, 
 	const Eigen::MatrixXd& HInv)
 {
-	Eigen::MatrixXd shortJac = jacobian(mb, mbc);
-    Eigen::MatrixXd fullJac(6, mb.nrDof());
+    Eigen::MatrixXd fullJac(shortJac.rows(), mb.nrDof());
 	fullJacobian(mb, shortJac, fullJac);
 
 	computeLambdaInv(mb, HInv, fullJac);
@@ -468,16 +457,22 @@ void Jacobian::computeLambdaInv(const MultiBody& /* mb */, const Eigen::MatrixXd
 }
 
 
-Eigen::Matrix6d Jacobian::lambda()
+const Eigen::Matrix6d& Jacobian::lambdaInv()
+{
+	return lambdaInv_;
+}
+
+
+Eigen::MatrixXd Jacobian::lambda()
 {
 	if(!isLambdaInvComputed_)
 		throw std::domain_error("You must call the function lambdaInv() before calling lambda()");
 
 	ldlt_.compute(lambdaInv_);
-	return ldlt_.solve(Eigen::MatrixXd::Identity(6, 6));
+	return ldlt_.solve(Eigen::MatrixXd::Identity(lambdaInv_.rows(), lambdaInv_.cols()));
 }
 
-
+/*
 Eigen::Vector6d Jacobian::effectiveMass(const Eigen::Matrix3d& E_0_p) const
 {
 	if(!isLambdaInvComputed_)
@@ -493,7 +488,7 @@ Eigen::Vector6d Jacobian::effectiveMass(const Eigen::Matrix3d& E_0_p) const
 
 	return effMass;
 }
-
+*/
 
 const Eigen::MatrixXd& Jacobian::sJacobian(
 	const MultiBody& mb, const MultiBodyConfig& mbc,
@@ -813,25 +808,14 @@ sva::MotionVecd Jacobian::bodyNormalAcceleration(const MultiBodyConfig& /* mbc *
 }
 
 
-void Jacobian::sLambdaInv(const MultiBody& mb, const MultiBodyConfig& mbc,
-	const Eigen::MatrixXd& HInv, const sva::PTransformd& X_0_p)
+void Jacobian::sLambdaInv(const MultiBody& mb, 
+		const Eigen::Ref<const Eigen::MatrixXd>& shortJac, 
+		const Eigen::MatrixXd& HInv)
 {
-	Eigen::MatrixXd shortJac = sJacobian(mb, mbc, X_0_p);
-    Eigen::MatrixXd fullJac(6, mb.nrDof());
+    Eigen::MatrixXd fullJac(shortJac.rows(), mb.nrDof());
 	sFullJacobian(mb, shortJac, fullJac);
 	
     sComputeLambdaInv(mb, HInv, fullJac);
-}
-
-
-void Jacobian::sLambdaInv(const MultiBody& mb, const MultiBodyConfig& mbc,
-	const Eigen::MatrixXd& HInv)
-{
-	Eigen::MatrixXd shortJac = sJacobian(mb, mbc);
-    Eigen::MatrixXd fullJac(6, mb.nrDof());
-	sFullJacobian(mb, shortJac, fullJac);
-
-	sComputeLambdaInv(mb, HInv, fullJac);
 }
 
 
@@ -846,10 +830,10 @@ void Jacobian::sComputeLambdaInv(const MultiBody& mb, const Eigen::MatrixXd& HIn
         throw std::domain_error(str.str());
     }
 
-    if (fullJac.rows() != 6 || fullJac.cols() != mb.nrDof())
+    if (fullJac.cols() != mb.nrDof())
     {
         str << "fullJac is of size: (" << fullJac.rows() << "," << fullJac.cols() << "), "
-            << "whereas it should be of size: (" << 6 << "," << mb.nrDof() << ").";
+            << "whereas it should be of size: (" << fullJac.rows() << "," << mb.nrDof() << ").";
         throw std::domain_error(str.str());
     }
 

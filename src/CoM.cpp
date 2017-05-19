@@ -283,6 +283,21 @@ CoMJacobian::CoMJacobian(const MultiBody& mb):
 }
 
 
+CoMJacobian::CoMJacobian(const MultiBody& mb, double weight):
+	jac_(3, mb.nrDof()),
+	jacDot_(3, mb.nrDof()),
+	bodiesCoeff_(mb.nrBodies()),
+	bodiesCoM_(mb.nrBodies()),
+	jointsSubBodies_(mb.nrJoints()),
+	bodiesCoMWorld_(mb.nrBodies()),
+	bodiesCoMVelB_(mb.nrBodies()),
+	normalAcc_(mb.nrJoints()),
+	weight_(mb.nrBodies(), weight)
+{
+	init(mb);
+}
+
+
 CoMJacobian::CoMJacobian(const MultiBody& mb, std::vector<double> weight):
 	jac_(3, mb.nrDof()),
 	jacDot_(3, mb.nrDof()),
@@ -330,6 +345,13 @@ void CoMJacobian::updateInertialParameters(const MultiBody& mb)
 const std::vector<double>& CoMJacobian::weight() const
 {
 	return weight_;
+}
+
+
+void CoMJacobian::weight(const MultiBody& mb, double w)
+{
+	weight_.assign(mb.nrBodies(), w);
+	updateInertialParameters(mb);
 }
 
 

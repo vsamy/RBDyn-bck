@@ -225,7 +225,7 @@ public:
 		return nrDof_;
 	}
 
-    /// @return kinematic chain from index
+    /// @return kinematic chain from index from tip to base
     std::vector<int> kinematicChain(int index) const;
 
 

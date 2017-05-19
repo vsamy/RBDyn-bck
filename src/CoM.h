@@ -134,6 +134,11 @@ public:
 	CoMJacobian(const MultiBody& mb);
 	/**
 	 * @param mb MultiBody used has model.
+	 * @param weight Apply to all bodies
+	 */
+	CoMJacobian(const MultiBody& mb, double weight);
+	/**
+	 * @param mb MultiBody used has model.
 	 * @param weight Per body weight.
 	 */
 	CoMJacobian(const MultiBody& mb, std::vector<double> weight);
@@ -148,6 +153,9 @@ public:
 
 	/// @return Per bodies weight.
 	const std::vector<double>& weight() const;
+
+	/// All bodies weight setter.
+	void weight(const MultiBody& mb, double w);
 
 	/// Per bodies weight setter.
 	void weight(const MultiBody& mb, std::vector<double> w);

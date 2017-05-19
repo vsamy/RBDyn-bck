@@ -226,21 +226,11 @@ public:
 		* Compute the inverse of the operational inertia matrix
         * This function call @see computeLambdaInv
 		* @param mb MultiBody used has model.
-		* @param mbc Use bodyPosW and motionSubspace.
-		* @param HInv Inverse of the inertia matrix
-		* @param X_0_p Jacobian point/frame
-		*/
-	void lambdaInv(const MultiBody& mb, const MultiBodyConfig& mbc,
-		const Eigen::MatrixXd& HInv, const sva::PTransformd& X_0_p);
-
-	/**
-		* Compute the inverse of the operational inertia matrix
-        * This function call @see computeLambdaInv
-		* @param mb MultiBody used has model.
-		* @param mbc Use bodyPosW and motionSubspace.
+		* @param shortJac The jacobian to project.
 		* @param HInv Inverse of the inertia matrix
 		*/
-	void lambdaInv(const MultiBody& mb, const MultiBodyConfig& mbc,
+	void lambdaInv(const MultiBody& mb, 
+		const Eigen::Ref<const Eigen::MatrixXd>& shortJac, 
 		const Eigen::MatrixXd& HInv);
 
 	/**
@@ -253,19 +243,25 @@ public:
 		const Eigen::MatrixXd& fullJac);
 
 	/**
+		* Get the lambdaInv matrix
+		* @return lambdaInv
+		*/
+	const Eigen::Matrix6d& lambdaInv();
+
+	/**
 		* Compute the inverse of the operational inertia matrix.
 		* LambdaInv must have been computed before using this function
 		* If lambdaInv is singular a least-square solution is computed.
 		* @return Return the operational inertia matrix
 		*/
-	Eigen::Matrix6d lambda();
+	Eigen::MatrixXd lambda();
 
-	/**
+	/** To delete
 		* Compute the effective mass at the given point. LambdaInv must have been computed first
 		* @param E_0_p Orientation of the point (Axis from to compute the effective mass) default is identity (world frame orientation)
 		* @return Vector6d of mass (Ix, Iy, Iz, mx, my, mz)
 		*/
-	Eigen::Vector6d effectiveMass(const Eigen::Matrix3d& E_0_p=Eigen::Matrix3d::Identity()) const;
+	//Eigen::Vector6d effectiveMass(const Eigen::Matrix3d& E_0_p=Eigen::Matrix3d::Identity()) const;
 
 	/**
 		* Project the jacobian in the full robot parameters vector.
@@ -419,19 +415,12 @@ public:
 	sva::MotionVecd sBodyNormalAcceleration(const MultiBody& mb, const MultiBodyConfig& mbc,
 		const std::vector<sva::MotionVecd>& normalAccB) const;
 	/**
-		* safe version of @see lambda.
+		* safe version of @see lambdaInv.
 		* @throw std::domain_error If mb don't match mbc or jointPath.
         * or if HInv ot fullJac don't match mb.nrDof().
 		*/
-	void sLambdaInv(const MultiBody& mb, const MultiBodyConfig& mbc,
-		const Eigen::MatrixXd& HInv, const sva::PTransformd& X_0_p);
-
-	/**
-		* safe version of @see lambda.
-		* @throw std::domain_error If mb don't match mbc or jointPath.
-        * or if HInv ot fullJac don't match mb.nrDof().
-		*/
-	void sLambdaInv(const MultiBody& mb, const MultiBodyConfig& mbc,
+	void sLambdaInv(const MultiBody& mb, 
+		const Eigen::Ref<const Eigen::MatrixXd>& shortJac, 
 		const Eigen::MatrixXd& HInv);
 
 	/**
@@ -456,7 +445,7 @@ private:
 	Eigen::MatrixXd jac_;
 	Eigen::MatrixXd jacDot_;
 
-	Eigen::Matrix6d lambdaInv_;
+	Eigen::MatrixXd lambdaInv_;
 	Eigen::LDLT<Eigen::MatrixXd> ldlt_;
 
 	bool isLambdaInvComputed_;
