@@ -188,6 +188,11 @@ public:
 	std::vector<double> zeroDof() const;
 
 	/**
+		* @return Joint gains at zero.
+		*/
+	std::vector<double> negativeDof() const;
+
+	/**
 		* Safe version of pose method.
 		* @see pose
 		* @throw std::domain_error If the number of generalized position variable is
@@ -231,6 +236,11 @@ public:
 		* @return Joint velocity at zero.
 		*/
 	static std::vector<double> ZeroDof(Type type);
+
+	/**
+		* @return Joint gains at zero.
+		*/
+	static std::vector<double> NegativeDof(Type type);
 
 private:
 	void constructJoint(Type t, const Eigen::Vector3d& a);
@@ -425,6 +435,10 @@ inline std::vector<double> Joint::zeroDof() const
 	return ZeroDof(type_);
 }
 
+inline std::vector<double> Joint::negativeDof() const
+{
+	return NegativeDof(type_);
+}
 
 inline sva::PTransformd Joint::sPose(const std::vector<double>& q) const
 {
@@ -508,6 +522,27 @@ inline std::vector<double> Joint::ZeroDof(Type type)
 	}
 }
 
+
+inline std::vector<double> Joint::NegativeDof(Type type)
+{
+	switch(type)
+	{
+		case Rev:
+		case Prism:
+			return {-1.};
+		case Spherical:
+			return {-1., -1., -1.};
+		case Planar:
+			return {-1., -1., -1.};
+		case Cylindrical:
+			return {-1., -1.};
+		case Free:
+			return {-1., -1., -1., -1., -1., -1.};
+		case Fixed:
+		default:
+			return {};
+	}
+}
 
 inline void Joint::constructJoint(Type t, const Eigen::Vector3d& a)
 {

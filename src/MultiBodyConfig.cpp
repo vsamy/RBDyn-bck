@@ -71,8 +71,8 @@ void MultiBodyConfig::zero(const MultiBody& mb)
 
 		jointTorque[i] = mb.joint(i).zeroDof();
 		jointMotorTorque[i] = mb.joint(i).zeroDof();
-		jointGainsK[i] = mb.joint(i).zeroDof();
-		jointGainsB[i] = mb.joint(i).zeroDof();
+		jointGainsK[i] = mb.joint(i).negativeDof();
+		jointGainsB[i] = mb.joint(i).negativeDof();
 	}
 
 	for(std::size_t i = 0; i < force.size(); ++i)
