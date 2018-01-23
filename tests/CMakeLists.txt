@@ -1,4 +1,4 @@
-# Copyright 2012-2016 CNRS-UM LIRMM, CNRS-AIST JRL
+# Copyright 2012-2017 CNRS-UM LIRMM, CNRS-AIST JRL
 #
 # This file is part of RBDyn.
 #
@@ -24,18 +24,18 @@ add_definitions(-DBOOST_TEST_DYN_LINK)
 add_definitions(-DTESTS_DATA_DIR="${PROJECT_SOURCE_DIR}/tests")
 include_directories("${PROJECT_SOURCE_DIR}/src")
 include_directories(${Boost_INCLUDE_DIRS})
-link_directories(${Boost_LIBRARY_DIR})
+link_directories(${Boost_LIBRARY_DIR} ${Boost_LIBRARY_DIRS})
 
 set(HEADERS XXXarm.h XYZarm.h XYZSarm.h Tree30Dof.h SSSarm.h)
 
 macro(addUnitTest name)
-  if(${UNIT_TESTS})
+  if(NOT ${DISABLE_TESTS})
     add_executable(${name} ${name}.cpp ${HEADERS})
     if(MSVC)
       # for msvc, we let boost auto-link do the work
-	    target_link_libraries(${name} RBDyn)
+	    target_link_libraries(${name} PUBLIC RBDyn)
     else(MSVC)
-      target_link_libraries(${name} ${Boost_LIBRARIES} RBDyn)
+      target_link_libraries(${name} PUBLIC ${Boost_LIBRARIES} RBDyn)
     endif(MSVC)
     PKG_CONFIG_USE_DEPENDENCY(${name} SpaceVecAlg)
     add_test(${name}Unit ${name})
@@ -49,9 +49,9 @@ macro(addBenchmark name)
     add_executable(${name} ${name}.cpp ${HEADERS})
     if(MSVC)
       # for msvc, we let boost auto-link do the work
-	    target_link_libraries(${name} RBDyn)
+	    target_link_libraries(${name} PUBLIC RBDyn)
     else(MSVC)
-      target_link_libraries(${name} ${Boost_LIBRARIES} RBDyn)
+      target_link_libraries(${name} PUBLIC ${Boost_LIBRARIES} RBDyn)
     endif(MSVC)
     PKG_CONFIG_USE_DEPENDENCY(${name} SpaceVecAlg)
 	# Adding a project configuration file (for MSVC only)
@@ -69,13 +69,7 @@ addUnitTest("CoMTest")
 addUnitTest("MomentumTest")
 addUnitTest("IDIMTest")
 addUnitTest("InverseStaticsTest")
+addUnitTest("IntegrationTest")
 
 addBenchmark("JacobianBench")
 addBenchmark("DynamicsBench")
-
-if(${PYTHON_BINDING})
-  set(PYTHON_TEST_COMMAND "${PYTHON_EXECUTABLE}")
-  configure_file(rbd_pickle_test.py ${CMAKE_CURRENT_BINARY_DIR}/rbd_pickle_test.py)
-  add_test(rbdPickleTestUnit ${PYTHON_TEST_COMMAND}
-    "${CMAKE_CURRENT_BINARY_DIR}/rbd_pickle_test.py")
-endif()

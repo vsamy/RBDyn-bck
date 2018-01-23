@@ -3,7 +3,7 @@ RBDyn
 
 [![License LGPL 3](https://img.shields.io/badge/license-LGPLv3-green.svg)](http://www.gnu.org/licenses/lgpl-3.0.txt)
 [![Build Status](https://travis-ci.org/jrl-umi3218/RBDyn.svg?branch=master)](https://travis-ci.org/jrl-umi3218/RBDyn)
-[![AppVeyor status](https://ci.appveyor.com/api/projects/status/76dqnpu9ckaoyes7/branch/master?svg=true)](https://ci.appveyor.com/project/gergondet/rbdyn-a5fgp/branch/master)
+[![AppVeyor status](https://ci.appveyor.com/api/projects/status/k2l715sc47t9u411/branch/master?svg=true)](https://ci.appveyor.com/project/gergondet/rbdyn/branch/master)
 
 RBDyn provide a set of class and function to model the dynamics of rigid body systems.
 
@@ -79,8 +79,8 @@ To compile you need the following tools:
 
 For Python bindings:
 
- * [PyBindGen](https://launchpad.net/pybindgen) = 0.16
- * [Eigen3ToPython](https://github.com/jorisv/Eigen3ToPython) (to use the python binding)
+ * [Cython](cython.readthedocs.io) = 0.20
+ * [Eigen3ToPython](https://github.com/jrl-umi3218/Eigen3ToPython) (to use the python binding)
 
 #### Building
 

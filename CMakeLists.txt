@@ -1,4 +1,4 @@
-# Copyright 2012-2016 CNRS-UM LIRMM, CNRS-AIST JRL
+# Copyright 2012-2017 CNRS-UM LIRMM, CNRS-AIST JRL
 #
 # This file is part of RBDyn.
 #
@@ -33,8 +33,9 @@ SET(CXX_DISABLE_WERROR True)
 
 SETUP_PROJECT()
 
-option(PYTHON_BINDING "Generate python binding." OFF)
-option(UNIT_TESTS "Generate unit tests." ON)
+option(PYTHON_BINDING "Generate python binding." ON)
+option(PYTHON_BINDING_USER_INSTALL "Install the Python bindings in user space" OFF)
+option(DISABLE_TESTS "Disable unit tests." OFF)
 option(BENCHMARKS "Generate benchmarks." OFF)
 
 if(NOT WIN32)
@@ -55,9 +56,11 @@ IF(MSVC)
   SET(CMAKE_MSVCIDE_RUN_PATH "\$(SolutionDir)/src/\$(Configuration)")
 ENDIF(MSVC)
 
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
+
 add_subdirectory(src)
 
-if(${UNIT_TESTS} OR ${BENCHMARKS})
+if(NOT ${DISABLE_TESTS} OR ${BENCHMARKS})
   add_subdirectory(tests)
 endif()
 
@@ -70,4 +73,4 @@ PKG_CONFIG_APPEND_LIBS(RBDyn)
 
 SETUP_PROJECT_FINALIZE()
 SETUP_PROJECT_CPACK()
-
+SETUP_PROJECT_PACKAGE_FINALIZE()
